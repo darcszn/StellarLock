@@ -61,6 +61,7 @@ export function Landing() {
 
       {/* Stats strip */}
       <section className="border-y border-border bg-card/40">
+        <div className="mx-auto grid max-w-6xl grid-cols-2 gap-px px-4">
         <div className="mx-auto grid max-w-6xl grid-cols-2 gap-px px-4 sm:grid-cols-4">
           <Stat label={t("landing.valueSecured")} value={formatUsd(totalSecured)} />
           <Stat
