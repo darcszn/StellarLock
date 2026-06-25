@@ -217,5 +217,12 @@
     "disconnectedDesc": "Your Freighter wallet was disconnected or the extension became unavailable. Please reconnect to continue.",
     "networkChanged": "Network changed",
     "networkChangedDesc": "Your wallet's network changed. Please reconnect to continue using StellarLock."
+  },
+  "breadcrumbs": {
+    "home": "Home",
+    "myLocks": "My Locks",
+    "lockId": "Lock #{{id}}",
+    "discover": "Discover",
+    "createLock": "Create Lock"
   }
 }

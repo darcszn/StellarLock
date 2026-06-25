@@ -200,5 +200,12 @@
     "unlocksIn": "Açılma süresi",
     "lock": "Kilit #{{id}}",
     "view": "Görüntüle"
+  },
+  "breadcrumbs": {
+    "home": "Home",
+    "myLocks": "My Locks",
+    "lockId": "Lock #{{id}}",
+    "discover": "Discover",
+    "createLock": "Create Lock"
   }
 }

@@ -200,5 +200,12 @@
     "unlocksIn": "Se desbloquea en",
     "lock": "Bloqueo #{{id}}",
     "view": "Ver"
+  },
+  "breadcrumbs": {
+    "home": "Home",
+    "myLocks": "My Locks",
+    "lockId": "Lock #{{id}}",
+    "discover": "Discover",
+    "createLock": "Create Lock"
   }
 }
