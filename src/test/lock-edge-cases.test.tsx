@@ -40,7 +40,8 @@ describe("Lock Creation Edge Cases", () => {
     render(<CreateTokenLockForm />)
 
     const tokenInput = screen.getByPlaceholderText(/token/i)
-    const amountInput = screen.getByDisplayValue("")
+    const amountInputs = screen.getAllByDisplayValue("")
+    const amountInput = amountInputs[0]
     const dateInput = screen.getByLabelText(/unlock date/i) as HTMLInputElement
 
     await user.type(tokenInput, "CBVOBNRDOMUMERKKXKYY3NHE4HHE4AQIZVMWUNUZKXNQPQHCSIKUBVJZ")
@@ -79,7 +80,8 @@ describe("Lock Creation Edge Cases", () => {
     render(<CreateTokenLockForm />)
 
     const tokenInput = screen.getByPlaceholderText(/token/i)
-    const amountInput = screen.getByDisplayValue("")
+    const amountInputs = screen.getAllByDisplayValue("")
+    const amountInput = amountInputs[0]
     const dateInput = screen.getByLabelText(/unlock date/i) as HTMLInputElement
 
     await user.type(tokenInput, "CBVOBNRDOMUMERKKXKYY3NHE4HHE4AQIZVMWUNUZKXNQPQHCSIKUBVJZ")
@@ -99,7 +101,8 @@ describe("Lock Creation Edge Cases", () => {
     render(<CreateTokenLockForm />)
 
     const tokenInput = screen.getByPlaceholderText(/token/i)
-    const amountInput = screen.getByDisplayValue("")
+    const amountInputs = screen.getAllByDisplayValue("")
+    const amountInput = amountInputs[0]
     const dateInput = screen.getByLabelText(/unlock date/i) as HTMLInputElement
 
     await user.type(tokenInput, "CBVOBNRDOMUMERKKXKYY3NHE4HHE4AQIZVMWUNUZKXNQPQHCSIKUBVJZ")
@@ -173,7 +176,8 @@ describe("Lock Creation Edge Cases", () => {
     render(<CreateTokenLockForm />)
 
     const tokenInput = screen.getByPlaceholderText(/token/i)
-    const amountInput = screen.getByDisplayValue("")
+    const amountInputs = screen.getAllByDisplayValue("")
+    const amountInput = amountInputs[0]
     const dateInput = screen.getByLabelText(/unlock date/i) as HTMLInputElement
 
     await user.type(tokenInput, "CBVOBNRDOMUMERKKXKYY3NHE4HHE4AQIZVMWUNUZKXNQPQHCSIKUBVJZ")

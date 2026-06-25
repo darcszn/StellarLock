@@ -55,8 +55,8 @@ describe("Token Lock Creation Flow", () => {
     expect(submitButton).toBeDisabled() // Still need amount and date
 
     // Fill amount
-    const amountInput = screen.getByDisplayValue("")
-    await user.type(amountInput, "100")
+    const amountInputs = screen.getAllByDisplayValue("")
+    await user.type(amountInputs[0], "100")
     expect(submitButton).toBeDisabled() // Still need date
 
     // Fill unlock date (future date)
@@ -87,7 +87,8 @@ describe("Token Lock Creation Flow", () => {
     const user = userEvent.setup()
     render(<CreateTokenLockForm />)
 
-    const amountInput = screen.getByDisplayValue("")
+    const amountInputs = screen.getAllByDisplayValue("")
+    const amountInput = amountInputs[0]
     await user.type(amountInput, "0")
 
     const submitButton = screen.getByRole("button", { name: /lock tokens/i })
@@ -159,7 +160,8 @@ describe("Token Lock Creation Flow", () => {
 
     // Fill form
     const tokenInput = screen.getByPlaceholderText(/token/i)
-    const amountInput = screen.getByDisplayValue("")
+    const amountInputs = screen.getAllByDisplayValue("")
+    const amountInput = amountInputs[0]
     const dateInput = screen.getByLabelText(/unlock date/i) as HTMLInputElement
 
     await user.type(tokenInput, "CBVOBNRDOMUMERKKXKYY3NHE4HHE4AQIZVMWUNUZKXNQPQHCSIKUBVJZ")
@@ -188,7 +190,8 @@ describe("Token Lock Creation Flow", () => {
 
     // Fill and submit form
     const tokenInput = screen.getByPlaceholderText(/token/i)
-    const amountInput = screen.getByDisplayValue("")
+    const amountInputs = screen.getAllByDisplayValue("")
+    const amountInput = amountInputs[0]
     const dateInput = screen.getByLabelText(/unlock date/i) as HTMLInputElement
 
     await user.type(tokenInput, "CBVOBNRDOMUMERKKXKYY3NHE4HHE4AQIZVMWUNUZKXNQPQHCSIKUBVJZ")
@@ -218,7 +221,8 @@ describe("Token Lock Creation Flow", () => {
     render(<CreateTokenLockForm />)
 
     const tokenInput = screen.getByPlaceholderText(/token/i)
-    const amountInput = screen.getByDisplayValue("")
+    const amountInputs = screen.getAllByDisplayValue("")
+    const amountInput = amountInputs[0]
     const dateInput = screen.getByLabelText(/unlock date/i) as HTMLInputElement
 
     await user.type(tokenInput, "CBVOBNRDOMUMERKKXKYY3NHE4HHE4AQIZVMWUNUZKXNQPQHCSIKUBVJZ")
