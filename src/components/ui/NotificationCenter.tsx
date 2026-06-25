@@ -1,5 +1,5 @@
 import { useCallback, useRef, useEffect, useState } from "react"
-import { Bell, Trash2, Check, CheckAll } from "lucide-react"
+import { Bell, Trash2, Check, CheckCheck } from "lucide-react"
 import { useNotificationCenter } from "@/hooks/useNotifications"
 import { cn } from "@/lib/utils"
 import { formatDateTime } from "@/lib/utils"
@@ -71,7 +71,7 @@ export function NotificationCenter() {
                   className="rounded p-1 hover:bg-secondary"
                   title="Mark all as read"
                 >
-                  <CheckAll className="h-4 w-4" />
+                  <CheckCheck className="h-4 w-4" />
                 </button>
               )}
               {notifications.length > 0 && (

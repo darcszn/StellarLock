@@ -148,4 +148,5 @@ class LoadTester {
   }
 }
 
-export { LoadTester, LoadTestScenario, LoadTestResult }
+export { LoadTester }
+export type { LoadTestScenario, LoadTestResult }
