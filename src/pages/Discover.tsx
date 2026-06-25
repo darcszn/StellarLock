@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/Badge"
 import { StatusBadge } from "@/components/ui/StatusBadge"
 import { TokenAvatar } from "@/components/ui/TokenAvatar"
 import { Button } from "@/components/ui/Button"
+import { RecentActivity } from "@/components/discover/RecentActivity"
 import { MOCK_LOCKS, TOKENS } from "@/lib/mock-data"
 import { formatAmount, formatDate, formatUsd, shortAddress } from "@/lib/utils"
 
@@ -91,7 +92,7 @@ export function Discover() {
                 to={`/app/lock/${lock.id}`}
                 className="flex items-center gap-4 p-4 transition-colors hover:bg-secondary/30"
               >
-                <TokenAvatar symbol={lock.token.symbol} size="sm" />
+                <TokenAvatar symbol={lock.token.symbol} contractId={lock.token.address} size="sm" />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <span className="font-medium">{lock.token.symbol}</span>
@@ -148,7 +149,7 @@ export function Discover() {
             <Link key={group.token.address} to={`/explore/${group.token.address}`}>
               <Card className="p-5 transition-colors hover:border-primary/40">
                 <div className="flex items-center gap-3">
-                  <TokenAvatar symbol={group.token.symbol} size="md" />
+                  <TokenAvatar symbol={group.token.symbol} contractId={group.token.address} size="md" />
                   <div>
                     <p className="font-semibold">{group.token.symbol}</p>
                     <p className="text-xs text-muted-foreground">{group.token.name}</p>
@@ -168,6 +169,9 @@ export function Discover() {
           ))}
         </div>
       </section>
+
+      {/* Recent Activity */}
+      <RecentActivity />
     </div>
   )
 }

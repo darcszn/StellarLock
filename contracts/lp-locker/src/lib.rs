@@ -4,6 +4,13 @@ use soroban_sdk::{
     Address, Env, Symbol, Vec,
 };
 
+// ── TTL constants ─────────────────────────────────────────────────────────────
+const LEDGERS_PER_DAY: u32 = 17_280;
+const PERSISTENT_BUMP: u32 = 365 * LEDGERS_PER_DAY;
+const PERSISTENT_THRESHOLD: u32 = PERSISTENT_BUMP;
+const INSTANCE_BUMP: u32 = 30 * LEDGERS_PER_DAY;
+const INSTANCE_THRESHOLD: u32 = 7 * LEDGERS_PER_DAY;
+
 // ── Storage keys ─────────────────────────────────────────────────────────────
 
 #[contracttype]
@@ -58,6 +65,7 @@ pub struct LpLock {
 fn next_id(env: &Env) -> u64 {
     let id: u64 = env.storage().instance().get(&DataKey::NextId).unwrap_or(5000);
     env.storage().instance().set(&DataKey::NextId, &(id + 1));
+    env.storage().instance().extend_ttl(INSTANCE_THRESHOLD, INSTANCE_BUMP);
     id
 }
 
@@ -65,6 +73,7 @@ fn push_index(env: &Env, key: DataKey, id: u64) {
     let mut ids: Vec<u64> = env.storage().persistent().get(&key).unwrap_or(vec![env]);
     ids.push_back(id);
     env.storage().persistent().set(&key, &ids);
+    env.storage().persistent().extend_ttl(&key, PERSISTENT_THRESHOLD, PERSISTENT_BUMP);
 }
 
 fn remove_from_index(env: &Env, key: DataKey, id: u64) {
@@ -76,6 +85,7 @@ fn remove_from_index(env: &Env, key: DataKey, id: u64) {
         }
     }
     env.storage().persistent().set(&key, &filtered);
+    env.storage().persistent().extend_ttl(&key, PERSISTENT_THRESHOLD, PERSISTENT_BUMP);
 }
 
 fn get_index(env: &Env, key: DataKey) -> Vec<u64> {
@@ -90,7 +100,9 @@ fn load_lock(env: &Env, id: u64) -> LpLock {
 }
 
 fn save_lock(env: &Env, lock: &LpLock) {
-    env.storage().persistent().set(&DataKey::Lock(lock.id), lock);
+    let key = DataKey::Lock(lock.id);
+    env.storage().persistent().set(&key, lock);
+    env.storage().persistent().extend_ttl(&key, PERSISTENT_THRESHOLD, PERSISTENT_BUMP);
 }
 
 fn collect_locks_paginated(env: &Env, ids: Vec<u64>, offset: u32, limit: u32) -> Vec<LpLock> {
@@ -162,10 +174,21 @@ impl LpLocker {
         };
 
         save_lock(&env, &lock);
-        push_index(&env, DataKey::ByCreator(creator), id);
-        push_index(&env, DataKey::ByBeneficiary(beneficiary), id);
+        push_index(&env, DataKey::ByCreator(creator.clone()), id);
+        push_index(&env, DataKey::ByBeneficiary(beneficiary.clone()), id);
 
-        env.events().publish((Symbol::new(&env, "lp_lock_created"),), id);
+        env.events().publish(
+            (
+                Symbol::new(&env, "lp_lock_created"),
+                id,
+                creator,
+                pool_share,
+                amount,
+                beneficiary,
+                unlock_at,
+            ),
+            (),
+        );
         Ok(id)
     }
 
@@ -189,7 +212,16 @@ impl LpLocker {
 
         lock.withdrawn = true;
         save_lock(&env, &lock);
-        env.events().publish((Symbol::new(&env, "lp_withdrawn"),), id);
+        env.events().publish(
+            (
+                Symbol::new(&env, "lp_lock_withdrawn"),
+                id,
+                lock.beneficiary.clone(),
+                lock.pool_share.clone(),
+                lock.amount,
+            ),
+            (),
+        );
         Ok(())
     }
 
@@ -205,11 +237,21 @@ impl LpLocker {
             return Err(ContractError::CanOnlyExtend);
         }
 
+        let old_unlock_at = lock.unlock_at;
         lock.unlock_at = new_unlock_at;
         lock.extended_count += 1;
 
         save_lock(&env, &lock);
-        env.events().publish((Symbol::new(&env, "lp_extended"),), id);
+        env.events().publish(
+            (
+                Symbol::new(&env, "lp_lock_extended"),
+                id,
+                lock.creator.clone(),
+                old_unlock_at,
+                new_unlock_at,
+            ),
+            (),
+        );
         Ok(())
     }
 
@@ -222,14 +264,33 @@ impl LpLocker {
             return Err(ContractError::AlreadyWithdrawn);
         }
 
+        let old_beneficiary = lock.beneficiary.clone();
         remove_from_index(&env, DataKey::ByBeneficiary(lock.beneficiary.clone()), id);
         push_index(&env, DataKey::ByBeneficiary(new_beneficiary.clone()), id);
 
-        lock.beneficiary = new_beneficiary;
+        lock.beneficiary = new_beneficiary.clone();
         save_lock(&env, &lock);
 
-        env.events().publish((Symbol::new(&env, "beneficiary_transferred"),), id);
+        env.events().publish(
+            (
+                Symbol::new(&env, "lp_beneficiary_transferred"),
+                id,
+                old_beneficiary,
+                new_beneficiary,
+            ),
+            (),
+        );
         Ok(())
+    }
+
+    /// Permissionless TTL maintenance — anyone can call this to prevent a lock
+    /// entry from being archived before the beneficiary withdraws.
+    pub fn bump_lock_ttl(env: Env, id: u64) {
+        let key = DataKey::Lock(id);
+        if env.storage().persistent().has(&key) {
+            env.storage().persistent().extend_ttl(&key, PERSISTENT_THRESHOLD, PERSISTENT_BUMP);
+        }
+        env.storage().instance().extend_ttl(INSTANCE_THRESHOLD, INSTANCE_BUMP);
     }
 
     // ── Read methods ──────────────────────────────────────────────────────────
